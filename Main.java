@@ -6,6 +6,7 @@ import org.example.objects.Motorbike;
 
 import java.security.PublicKey;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
@@ -20,9 +21,9 @@ public class Main {
         Scanner userInput = new Scanner(System.in);
 
         // Starts the console
-        System.out.println("Choose an option");
-        
+
         while(onConsole) {
+            System.out.println("Please, choose an option number:");
             System.out.println("1. Add vehicle.");
             System.out.println("2. Show vehicles.");
             System.out.println("3. Exit.");
@@ -56,6 +57,7 @@ public class Main {
                     System.out.println("Closing the console. Thank you.");
                     break;
                 default:
+                    System.out.println("Unknown option. Please, specify one the available options below.");
                     break;
             }
         }
@@ -73,13 +75,13 @@ public class Main {
                 System.out.println("\t5) the cylinders (as an integer).\n\t6) whether the motorbike has a sidecar.");
                 return true;
             default:
-                System.out.println("The vehicle type" + type + "is not available for registration. Please select other.");
+                System.out.println("The vehicle type '" + type + "' is not available for registration. Please select one among 'car' or 'motorbike'.");
                 return false;
         }
     }
 
     public static void commonUserInputGuide() {
-        System.out.println("Specify the vehicles features by comma-separated values like:\n ");
+        System.out.println("Specify the vehicles features by comma-separated values.\n(Example: Renault,Rafale,2024,1111AAA,4,false)\n ");
         System.out.println("\t1) brand.\n\t2) model.\n\t3) year.\n\t4) licensePlate.");
     }
 
@@ -120,37 +122,64 @@ public class Main {
         String vehicleType = features[0];
 
         try {
-            if (vehicleType.equals("car")) {
-                addCar(features);
-            } else {
-                addMotorbike(features);
+            int nFeatures = (int) Arrays.stream(features).count();
+            if (nFeatures < 6) {
+                throw new Exception("You have provided " + nFeatures + " feature, but 6 features are the minimum required.");
             }
         } catch (Exception e) {
-            System.out.println("Error at adding a vehicle: " + e.toString());
+            System.out.println(e.getMessage());
+            return;
+        }
+
+        try {
+            if (features[2].trim().length() != 4) {
+                throw new Exception("year value must be equal to 4 digits. Reseting options...");
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return;
+        }
+
+        int vehicleYear = Integer.parseInt(features[2].trim());
+        try {
+            // Validate the year 2)
+            if ((vehicleYear < 1900) || (vehicleYear > 2050)) {
+                throw new Exception("year value must be between 1900 and 2050. Reseting options...");
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return;
+        }
+
+        // Add a vehicle
+        if (vehicleType.equals("car")) {
+            addCar(features);
+        } else {
+            addMotorbike(features);
         }
     }
 
     public static void addCar(String[] features) {
-        vehicles.add(new Car(
+        Car newCar = new Car(
                 features[0],
                 features[1],
                 features[2],
                 features[3],
                 Integer.parseInt(features[4].trim()),
                 Boolean.parseBoolean(features[5].trim())
-                )
         );
+        vehicles.add(newCar);
         System.out.println("Vehicle " + features[0] + "added" + vehicles.size());
     }
     public static void addMotorbike(String[] features) {
-        vehicles.add(new Motorbike(
+        Motorbike newMotorbike = new Motorbike(
                 features[0],
                 features[1],
                 features[2].trim(),
                 features[3],
                 Integer.parseInt(features[4].trim()),
                 Boolean.parseBoolean(features[5].trim())
-                )
         );
+        vehicles.add(newMotorbike);
     }
 }

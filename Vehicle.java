@@ -8,17 +8,6 @@ public class Vehicle {
     boolean started;
 
     public Vehicle(String brand, String model, String year, String licensePlate) {
-        // Validate the year 1)
-        if (year.trim().length() != 4) {
-            System.out.println("year value must be equal to 4 digits");
-            return;
-        }
-
-        // Validate the year 2)
-        if ((Integer.parseInt(year.trim()) < 1900) && (Integer.parseInt(year.trim()) > 2050)) {
-            System.out.println("year value must be between 1900 and 2050.");
-            return;
-        }
         this.brand = brand;
         this.model = model;
         this.year = year;
